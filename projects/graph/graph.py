@@ -44,7 +44,8 @@ class Graph:
             v = q.dequeue()
 
             if not v in visited:
-                print(f"Visited: {v}")
+                # print(f"Visited: {v}")
+                print(v)
 
                 visited.add(v)
 
@@ -65,7 +66,8 @@ class Graph:
             v = q.pop()
 
             if not v in visited:
-                print(f"Visited: {v}")
+                # print(f"Visited: {v}")
+                print(v)
 
                 visited.add(v)
 
@@ -80,7 +82,9 @@ class Graph:
         This should be done using recursion.
         """
         if not starting_vertex in visited:
-            print(f"Visited: {starting_vertex}")
+            # print(f"Visited: {starting_vertex}")
+
+            print(starting_vertex)
 
             visited.add(starting_vertex)
 
