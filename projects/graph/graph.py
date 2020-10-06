@@ -95,7 +95,6 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-
         q = Queue()
         visited = set()
 
@@ -122,7 +121,24 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        q = Stack()
+        visited = set()
+
+        q.push([starting_vertex])
+
+        while q.size() > 0:
+            path = q.pop()
+            v = path[len(path)-1]
+            
+            if not v in visited:
+                if v == destination_vertex:
+                    return path
+
+                # print(f"Visited: {v}")
+                visited.add(v)
+
+                for neighbor in self.get_neighbors(v):
+                    q.enqueue(path + [neighbor])
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
         """
@@ -185,7 +201,7 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5 ✔
         1, 2, 4, 6, 3, 5, 7
     '''
-    # graph.dft(1)
+    graph.dft(1)
     # graph.dft_recursive(1)
 
     '''
