@@ -15,7 +15,7 @@ def earliest_ancestor(ancestors, starting_node):
         ancestors[item[1]].append(item[0])
     
     # Check that ancestors dict looks right (child: [ancestor1, ancestor2])
-    print(ancestors)
+    # print(ancestors)
 
     # Returns early if the node is not found in the graph, or it it has no parents
     if starting_node not in ancestors or len(ancestors[starting_node]) == 0:
@@ -26,14 +26,29 @@ def earliest_ancestor(ancestors, starting_node):
     level = {}
     while q.size() > 0:
         current_node = q.dequeue()
-        print(f"Current node: {current_node} {level}")
+        # print(f"Current node: {current_node} {level}")
 
         # If the current node does not have a level,
         # add one. This should only happen on the first run.
         if current_node not in level:
             level[current_node] = 1
-            print(f"Adding level to node: {level[current_node]}")
+            # print(f"Adding level to node: {level[current_node]}")
 
-        for ancestor in ancestors[current_node]:
-            level[ancestor] = level[current_node] + 1
-            q.enqueue(ancestor)
+        if current_node in ancestors:
+            for ancestor in ancestors[current_node]:
+                level[ancestor] = level[current_node] + 1
+                q.enqueue(ancestor)
+
+    # Check to see if we have a dictionary with levels
+    # print(level)
+
+    highest_level = [-1, -1] # [key, level]
+    for key in level:
+        # print(level[key])
+        if level[key] > highest_level[1]: # replaces highest level if level is larger
+            highest_level = [key, level[key]]
+        if level[key] == highest_level and key < highest_level[0]:
+            highest_level = [key, level[key]]
+    
+    # print(highest_level[0])
+    return highest_level[0]
