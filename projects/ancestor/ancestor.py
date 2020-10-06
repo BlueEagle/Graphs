@@ -45,9 +45,8 @@ def earliest_ancestor(ancestors, starting_node):
     highest_level = [-1, -1] # [key, level]
     for key in level:
         # print(level[key])
-        if level[key] > highest_level[1]: # replaces highest level if level is larger
-            highest_level = [key, level[key]]
-        if level[key] == highest_level and key < highest_level[0]:
+        # if current level is higher, update var. If they are the same and the current key is lower, update var
+        if level[key] > highest_level[1] or (level[key] == highest_level and key < highest_level[0]): 
             highest_level = [key, level[key]]
     
     # print(highest_level[0])
