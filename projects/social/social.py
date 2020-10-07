@@ -45,8 +45,12 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(0, num_users):
+            self.add_user(f"user{i}")
 
         # Create friendships
+        for id in self.users:
+            print(id)
 
     def get_all_social_paths(self, user_id):
         """
@@ -66,5 +70,5 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(sg.friendships)
-    connections = sg.get_all_social_paths(1)
-    print(connections)
+    # connections = sg.get_all_social_paths(1)
+    # print(connections)
