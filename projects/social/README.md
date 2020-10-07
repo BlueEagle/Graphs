@@ -53,6 +53,8 @@ add_friendship() would be called an average of 1000 times. The populate_graph() 
 
 2. If you create 1000 users with an average of 5 random friends each, what percentage of other users will be in a particular user's extended social network? What is the average degree of separation between a user and those in his/her extended network?
 
+On average, 80-85% of users will be in a particular user's extended network. The average degree of separation between these users and the individual is 2.
+
 ## 4. Stretch Goal
 
 1. You might have found the results from question #2 above to be surprising. Would you expect results like this in real life? If not, what are some ways you could improve your friendship distribution model for more realistic results?

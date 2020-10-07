@@ -94,7 +94,7 @@ class SocialGraph:
             current_user = path[-1]
 
             if current_user not in visited:
-                print(f"Visiting ID: {current_user}")
+                # print(f"Visiting ID: {current_user}")
                 visited[current_user] = path
 
                 for friend in self.friendships[current_user]:
@@ -106,11 +106,25 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
+    users = 1000
+    avg_friends = 100
+    sg.populate_graph(users, avg_friends)
+    print(f"Printing all social graphs for {users}, whith and average of {avg_friends} friends.")
     print(sg.friendships)
 
     """
     I expect this to return all the paths for: 1, 3, 5, 7, 9, 10, 4, 8, 2, 6
     """
-    connections = sg.get_all_social_paths(1)
+    user = 1
+    print(f"Printing all social paths for user {user}")
+    connections = sg.get_all_social_paths(user)
     print(connections)
+    count = 0
+    avg_separation = 0
+    for connection in connections:
+        if len(connections[connection]) > 2:
+            count += 1
+            avg_separation += len(connections[connection])-1
+
+    avg_separation = avg_separation / count
+    print(f"That is {count} / {users} users in user {user}'s extended social network. This is at an average of {avg_separation} hops.")
