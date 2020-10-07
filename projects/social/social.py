@@ -1,8 +1,11 @@
 import random
+from util import Queue
+
 
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -81,6 +84,23 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        q = Queue()
+
+        # init the queue, it's ready for looping!
+        q.enqueue([user_id])
+
+        while q.size() > 0:
+            path = q.dequeue()
+            current_user = path[-1]
+
+            if current_user not in visited:
+                print(f"Visiting ID: {current_user}")
+                visited[current_user] = path
+
+                for friend in self.friendships[current_user]:
+                    # print(friend)
+                    q.enqueue(path + [friend])
+
         return visited
 
 
@@ -88,5 +108,9 @@ if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(sg.friendships)
-    # connections = sg.get_all_social_paths(1)
-    # print(connections)
+
+    """
+    I expect this to return all the paths for: 1, 3, 5, 7, 9, 10, 4, 8, 2, 6
+    """
+    connections = sg.get_all_social_paths(1)
+    print(connections)
