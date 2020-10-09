@@ -30,11 +30,9 @@ while s.size() > 0:
     print(
         f"Last room {last_room_id} Current room {current_room} Traversal graph {traversal_graph}")
 
-    if current_room not in traversal_graph:
+    if current_room not in traversal_graph:  # create the first entry for this room
         traversal_graph[current_room] = {
-            exit: '?' for exit in player.current_room.get_exits()}
-        if travel_direction:
-            traversal_graph[last_room_id][travel_direction] = current_room
+            direction: '?' for direction in player.current_room.get_exits()}
 
     # we will add this one before all the others, it will be the last one processed
     last_room = reverse_direction(travel_direction)

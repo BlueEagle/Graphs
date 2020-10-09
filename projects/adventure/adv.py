@@ -1,7 +1,7 @@
 from room import Room
 from player import Player
 from world import World
-from util import Stack
+from util import Queue
 
 import random
 from ast import literal_eval
@@ -11,8 +11,8 @@ world = World()
 
 
 # You may uncomment the smaller graphs for development and testing purposes.
-map_file = "maps/test_line.txt"
-# map_file = "maps/test_cross.txt"
+# map_file = "maps/test_line.txt"
+map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
@@ -37,6 +37,16 @@ WORKING AREA
 """
 
 
+traversal_graph = {}
+s = Queue()
+visited = set()
+
+starting_room = player.current_room.id
+s.enqueue([starting_room])
+
+last_room = None
+
+
 def reverse_direction(direction):
     if direction == 'n':
         return 's'
@@ -48,66 +58,36 @@ def reverse_direction(direction):
         return 'e'
 
 
-traversal_graph = {}
-bucket_list_stack = Stack()
-breadcrumbs_stack = Stack()
-
-bucket_list_stack.push([player.current_room.id])
-breadcrumbs_stack.push(player.current_room.id)
-
-starting_room = player.current_room.id
-last_room_id = None
-
-while bucket_list_stack.size() > 0:
-    path = bucket_list_stack.pop()
+while s.size() > 0:
+    path = s.dequeue()
     travel_direction = path[-1] if not path[-1] == starting_room else None
 
     if travel_direction:
-        breadcrumbs_stack.push(travel_direction)
         player.travel(travel_direction)
+        traversal_path.append(travel_direction)
+
     current_room = player.current_room.id
-    # add new room ID to last room in graph, add last room ID to current room in graph.
-    # where can we get the last room ID?
+    visited.add(current_room)
+    # print(current_room)
+    # print(visited, current_room)
 
-    # if last_room_id:
-    #     print(f"BEFORE (Room {current_room}): {traversal_graph}")
-    #     # I moved in what direction to get here? travel_direction
-    #     # update the last room with current info.
-    #     traversal_graph[current_room][travel_direction] = current_room
-    #     # traversal_graph[current_room][reverse_direction(
-    #     # travel_direction)] = last_room_id
-    #     # print(
-    #     #     f"UPDATE: new info for current room: {traversal_graph[current_room]}")
-    #     # print(
-    #     #     f"UPDATE: new info for current room: {traversal_graph[last_room_id]}")
-    #     print(f"AFTER: {traversal_graph}")
-    # last_room_id = current_room
+    if current_room not in traversal_graph:  # create the first entry for this room
+        traversal_graph[current_room] = {
+            direction: '?' for direction in player.current_room.get_exits()}
 
-    if current_room not in traversal_graph:
-        # traversal_graph[current_room] = { n}
-        exits = player.current_room.get_exits()
-        traversal_graph[current_room] = {direction: '?' for direction in exits}
-        print(
-            f"You've entered a new room, the exits are: {exits}")
-        print(
-            f"Added {current_room} to traversal graph. It now looks like: {traversal_graph}")
-
-    if travel_direction:
-        last_room_id = breadcrumbs_stack.pop()
+    if last_room:
         traversal_graph[current_room][reverse_direction(
-            travel_direction)] = last_room_id
-        # traversal_graph[last_room_id][travel_direction] = current_room
-        breadcrumbs_stack.push(last_room_id)
+            last_room[1])] = last_room[0]
+        traversal_graph[last_room[0]][last_room[1]] = current_room
+    last_room = (current_room, travel_direction)
 
-    # look in every direction from the room
+    # print(traversal_graph[current_room], f"\n\n {current_room}")
+
     for direction in traversal_graph[current_room]:
-        if traversal_graph[current_room][direction] == '?':
-            print(
-                f"In room {current_room}, found mysterious room to the {direction}")
-
-            new_path = path + [direction]  # We do not have the id yet :(
-            # we can figure out what direction needs to be taken by knowing the key and which path we took to get somewhere.
-            bucket_list_stack.push(new_path)
+        if traversal_graph[current_room][direction] not in visited:
+            # print(traversal_graph[current_room][direction])
+            # print(current_room, [direction])
+            s.enqueue([direction])
 
 
 """
