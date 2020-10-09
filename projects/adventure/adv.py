@@ -11,8 +11,8 @@ world = World()
 
 
 # You may uncomment the smaller graphs for development and testing purposes.
-# map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+map_file = "maps/test_line.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
@@ -58,36 +58,47 @@ def reverse_direction(direction):
         return 'e'
 
 
+iter = 1
 while s.size() > 0:
+    # pull the latest path and direction from the queue
     path = s.dequeue()
-    travel_direction = path[-1] if not path[-1] == starting_room else None
+    travel_direction = path[-1] if not path[-1] == starting_room else 'n'
+    print(f"Travel direction {travel_direction}")
+    # travel_direction = path[-1]
 
-    if travel_direction:
-        player.travel(travel_direction)
-        traversal_path.append(travel_direction)
-
+    # visit the currently queued room
     current_room = player.current_room.id
     visited.add(current_room)
-    # print(current_room)
-    # print(visited, current_room)
+    print(visited, current_room)
 
     if current_room not in traversal_graph:  # create the first entry for this room
         traversal_graph[current_room] = {
             direction: '?' for direction in player.current_room.get_exits()}
 
     if last_room:
-        traversal_graph[current_room][reverse_direction(
-            last_room[1])] = last_room[0]
-        traversal_graph[last_room[0]][last_room[1]] = current_room
-    last_room = (current_room, travel_direction)
+        print(f"Last room: {last_room}")
 
+        if travel_direction:
+            print(f"Iteration: {iter}")
+            traversal_graph[current_room][reverse_direction(
+                last_room[1])] = last_room[0]
+            traversal_graph[last_room[0]][last_room[1]] = current_room
+            print(traversal_graph)
+
+    last_room = (current_room, travel_direction)
     # print(traversal_graph[current_room], f"\n\n {current_room}")
+
+    # if this is at least the second loop through, travel and add to reversal path
+    if travel_direction:
+        player.travel(travel_direction)
+        traversal_path.append(travel_direction)
 
     for direction in traversal_graph[current_room]:
         if traversal_graph[current_room][direction] not in visited:
             # print(traversal_graph[current_room][direction])
             # print(current_room, [direction])
             s.enqueue([direction])
+    iter += 1
 
 
 """
