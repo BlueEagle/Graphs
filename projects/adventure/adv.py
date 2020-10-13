@@ -1,7 +1,9 @@
+# from adventure.old8 import reverse_direction
 from room import Room
 from player import Player
 from world import World
 from util import Queue, Stack
+import random
 
 import random
 from ast import literal_eval
@@ -12,10 +14,10 @@ world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
-map_file = "maps/test_cross.txt"
+# map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -26,50 +28,114 @@ world.print_rooms()
 
 player = Player(world.starting_room)
 
-# Fill this out with directions to walk
-# traversal_path = ['n', 'n']
-traversal_path = []
-
-
 """
 WORKING AREA
 # traversal_path = ['n', 'n']
 """
 
-def reverse_direction(direction):
-    if direction == 'n':
-        return 's'
-    if direction == 's':
-        return 'n'
-    if direction == 'e':
-        return 'w'
-    if direction == 'w':
-        return 'e'
+# Fill this out with directions to walk
+# traversal_path = ['n', 'n']
+traversal_path = []
+map = {}
+def explore(player, moves):
+    q = Queue()
 
-traversal_graph = {}
-q = Queue()
-visited = set()
+    q.enqueue([player.current_room.id])
 
-q.enqueue(['n']) # this can be the first item of the list of exits.
-while q.size() > 0:
-    path = q.dequeue()
-    direction = path[-1]
+    visited = set()
 
-    if player.current_room.id not in visited:
-        visited.add(player.current_room.id)
-        print(f"Visited: {player.current_room.id} Set: {visited}")
-        last_room_id = player.current_room.id
-        player.travel(direction)
+    while q.size() > 0:
+        path = q.dequeue()
+        current_room = path[-1]
+
+        if current_room not in visited:
+            visited.add(current_room)
+
+            for exit in map[current_room]:
+                if map[current_room][exit] == "?":
+                    return path
+                else:
+                    new_path = list(path)
+                    new_path.append(map[current_room][exit])
+                    q.enqueue(new_path)
+    
+    return []
+
+new_moves = Queue()
+def unexplored(player, new_moves):
+    exits = map[player.current_room.id]
+    untried = []
+
+    for direction in exits:
+        if exits[direction] == "?":
+            untried.append(direction)
+
+    if len(untried) == 0:
+        not_explored = explore(player, new_moves)
+        new_room = player.current_room.id
         
-        if player.current_room.id not in traversal_graph:
-            traversal_graph[player.current_room.id] = {direction: '?' for direction in player.current_room.get_exits()}
+        for room in not_explored:
+            for direction in map[new_room]:
+                if map[new_room][direction] == room:
+                    new_moves.enqueue(direction)
+                    new_room = room
+                    break
 
-        traversal_graph[player.current_room.id][reverse_direction(direction)] = last_room_id
-        print(traversal_graph)
+    else:
+        new_moves.enqueue(untried[random.randint(0, len(untried)-1)])
 
+unexplored_room = {}
+for direction in player.current_room.get_exits():
+    unexplored_room[direction] = "?"
+
+map[world.starting_room.id] = unexplored_room
+
+unexplored(player, new_moves)
+
+reverse_directions = {"n": "s", "s": "n", "e": "w", "w": "e"}
+
+while new_moves.size() > 0:
+    current_room = player.current_room.id
+    move = new_moves.dequeue()
+    player.travel(move)
+    traversal_path.append(move)
+    next_room = player.current_room.id
+    map[current_room][move] = next_room
+    
+    if next_room not in map:
+        map[next_room] = {}
 
         for exit in player.current_room.get_exits():
-            q.enqueue(exit)
+            map[next_room][exit] = '?'
+    
+    map[next_room][reverse_directions[move]] = current_room
+
+    if new_moves.size() == 0:
+        unexplored(player, new_moves)
+
+# paths = Queue()
+# backtrace = Stack()
+# visited = set()
+
+# paths.enqueue([player.current_room])
+# while paths.size() > 0:
+#     path = paths.dequeue()
+#     current_room = path[-1]
+
+#     if current_room not in visited:
+#         visited.add(current_room)
+
+#         # add exits to the current room
+#         if player.current_room not in places:
+#             places[player.current_room.id] = {direction: '?' for direction in player.current_room.get_exits()}
+
+#         # explore surrounding rooms and get their id's
+#         for room in player.current_room.get_exits():
+#             player.
+
+
+
+
 
 
 
